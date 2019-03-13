@@ -2,13 +2,12 @@ package a04;
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.MinPQ;
-import edu.princeton.cs.algs4.Queue;
+import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public final class Solver {
 	
-	private int moves;
-	Queue<Board> solutions;
+	private Stack<Board> solutions;
 	
 	/**
 	 * Finds a solution to the initial board (using the A* algorithm)
@@ -19,24 +18,27 @@ public final class Solver {
 		if (initial == null) throw new NullPointerException("Null value is not accepted.");
 		
 		MinPQ<SearchNode> pq = new MinPQ<>();
-		solutions = new Queue<>();
-		moves = 0;
+		solutions = new Stack<>();
 		
 		SearchNode firstNode = new SearchNode(initial, 0, null);
 		pq.insert(firstNode);
 		
 		while (true) {
-			SearchNode remove = pq.delMin();
-			solutions.enqueue(remove.getBoard());
-			if (remove.getBoard().isGoal()) break;
-			moves++;
+			firstNode = pq.delMin();
+			if (firstNode.board.isGoal()) break;
 			
-			for (Board neighbor : remove.getBoard().neighbors()) {
-				if (!neighbor.equals(remove.getBoard())) {
-					pq.insert(new SearchNode(neighbor, moves, remove));
-				}
+			for (Board neighbor : firstNode.board.neighbors()) {
+				if(firstNode.previous == null
+					|| (firstNode.previous != null && !neighbor.equals(firstNode.previous.board))) {
+					pq.insert(new SearchNode(neighbor, firstNode.moveNum + 1, firstNode));
+				} 
 			}
 		}
+		
+		while(firstNode != null) {
+            solutions.push(firstNode.board);
+            firstNode = firstNode.previous;
+        }
 	}
 	
 	/**
@@ -44,7 +46,7 @@ public final class Solver {
 	 * @return
 	 */
     public int moves() {
-    	return moves;
+    	return solutions.size() - 1;
     }
     
     /**
@@ -69,20 +71,16 @@ public final class Solver {
      */
     public class SearchNode implements Comparable<SearchNode> {
     	
-    	private Board board;
-    	private int moveNum;
-    	private int priority;
-    	private SearchNode previous;
+    	Board board;
+    	int moveNum;
+    	int priority;
+    	SearchNode previous;
     	
     	public SearchNode(Board board, int moveNum, SearchNode previous) {
     		this.board = board;
     		this.moveNum = moveNum;
-    		this.priority = this.moveNum + this.board.hamming();
+    		this.priority = this.moveNum + this.board.manhattan();
     		this.previous = previous;
-    	}
-    	
-    	public Board getBoard() {
-    		return board;
     	}
 
 		@Override

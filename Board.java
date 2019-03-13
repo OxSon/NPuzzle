@@ -74,7 +74,7 @@ public final class Board {
 			if (blocks[i] - 1 != i) {
 				int step = blocks[i] - 1 - i;
 				if (step < 0) step = -step;
-				manhattan += step / 3 + step % 3;
+				manhattan += step / size + step % size;
 			}
 		}
 		return manhattan;
@@ -316,6 +316,14 @@ public final class Board {
 		StdOut.println(board3);
 		StdOut.println("Neighbors:");
 		for (Board b: board3.neighbors()) {
+			StdOut.println(b);
+		}
+		int[][] blocks12 = { {1, 2, 4}, {0, 5, 3}, {7, 8, 6} };
+		Board board7 = new Board(blocks12);
+		StdOut.println("Original:");
+		StdOut.println(board7);
+		StdOut.println("Neighbors:");
+		for (Board b: board7.neighbors()) {
 			StdOut.println(b);
 		}
 	}
