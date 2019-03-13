@@ -24,17 +24,7 @@ public class Board {
      */
     private final int[] boardFlat;
     private final int size;
-    //FIXME is it better to compute this on demand,
-    // or compute once in constructor and use the extra memory for storing the array?
-    // note: storing this array costs us an extra 4N + 32 byes of memory
-    // storing the array also greatly simplifies code in a number of places and improves readability
-    // my current thinking is it's worth it to store, but that may change during implementation of solver
-    // as we may need to store a large number of board objects
     private final int[] goal;
-    //FIXME is it better to store this, thereby making isSolvable calls no longer n^2 in the worst case, but n lgn?
-    // and simplifying code for 'neighbors' //FIXME exactly how much does it improve?
-    // Or is the extra memory and constructor calculation time not desirable?
-    // Also note: 'row' and 'col' might be bad names for these, can be confusing, X and Y might be better
     private int blankTileRow;
     private int blankTileCol;
 
@@ -49,8 +39,6 @@ public class Board {
      * @param blocks initial layout of blocks.
      */
     public Board(int[][] blocks) {
-        //TODO decide whether we're calculating goal here. Without, constructor takes O(N) time
-        // with it, still takes O(N) time (~2N using tilde notation)
         size = blocks.length;
 
         //calculate goal board for later reference
@@ -69,7 +57,6 @@ public class Board {
             for (int j = 0; j < size; j++) {
                 boardFlat[k++] = blocks[i][j];
 
-                //TODO decide if it's worth storing these in board, see notes above at field declarations
                 if (blocks[i][j] == 0) {
                     blankTileRow = i;
                     blankTileCol = j;
@@ -79,7 +66,7 @@ public class Board {
     }
 
     /**
-     * Board size N (i.e. a 3 by 3 board with 9 total spaces would be size 3)
+     * Board size N (i.e. a 3 by 3 board with 9 total spaces would be size 3).
      * <p>
      *
      * @return board size N.
@@ -100,7 +87,6 @@ public class Board {
         int count = 0;
         //we use boardFlat.length - 1 because we are not interested in the position of the blank tile
         for (int i = 0; i < boardFlat.length - 1; i++) {
-            //FIXME this step takes time proportional to N^2, is there a better way? seems unlikely, we must examine each element, yes?
             if (goal[i] != boardFlat[i])
                 count++;
         }
@@ -119,10 +105,8 @@ public class Board {
      * @return sum of Manhattan distances between blocks and goal.
      */
     public int manhattan() {
-        //TODO test this
         int sum = 0;
         for (int i = 0; i < boardFlat.length; i++) {
-            //FIXME this step takes time proportional to N^2, is there a better way? seems unlikely, we must examine each element, yes?
             sum += manhattanSingle(boardFlat[i], i);
         }
 
@@ -165,16 +149,6 @@ public class Board {
      * @return true if this board is the goal board false otherwise.
      */
     public boolean isGoal() {
-        //FIXME is it better to do the work of calculating this more frequently with this equals method,
-        // or is it better to store the goal board as a field?
-        // With this implementation order of growth is linear, which does meets the minimum requirements
-//        //create our goal board
-//        int[] goal = new int[size * size];
-//        for(int i = 0; i < goal.length - 1; i++) { //add numbers in range [1, size * size - 1]
-//            goal[i] = i + 1;
-//        }
-//        goal[goal.length - 1] = 0; //add the blank square in bottom right
-
         //Should take time proportional to N^2 in the worst case as per java's Arrays.equals spec,
         //i.e. Arrays.equals takes linear time in the worst case,
         // i.e. time proportional to M, where M for Arrays.equals = N^2
@@ -188,17 +162,12 @@ public class Board {
      * the number of inversions in the permutation, or more precisely, their parity,
      * and, if N is even, also the row-index of the blank tile, or again, its' parity.
      * <p>
-     * FIXME remove this comment once we've verified that the below is accurate:
      * Using this method, we are able to determine parity in
      * time proportional to M where M is the total number of elements, i.e. N^2
      *
      * @return true if board is solvable false otherwise.
      */
     public boolean isSolvable() {
-        //FIXME: tested with a a small number of known inputs and with random input,
-        // final test that would be useful would be comparing against the entire file-list
-        // that is provided by the course instructors, i.e. against a large number of known inputs.
-        // setting up the test might be a pain in the ass though
         boolean evenParity = permutationParity();
         //odd board size, like classic 8 puzzle which is 3x3
         if (size % 2 != 0) {
@@ -291,29 +260,28 @@ public class Board {
 //     * @return true if board is solvable false otherwise.
 //     */
     //FIXME delete this and the merge sort methods, breaks API, useful for testing though
-    public boolean isSolvableMergeSortMethod() {
-        int inversions = inversions(boardFlat);
-
+    //public boolean isSolvableMergeSortMethod() {
+        //int inversions = inversions(boardFlat);
+//
         // 1 2 3 4 5 0 6 8 9 10 7 11 13 14 15 12
 
         //if board size is odd, a solvable board has an even number of inversions
-        if (size % 2 != 0)
-            return inversions % 2 == 0;
-        else
-            //if board size is even, a solvable board has an odd sum of inversions and blank tile row
-            return (inversions + blankTileRow) % 2 != 0;
-    }
+        //if (size % 2 != 0)
+            //return inversions % 2 == 0;
+        //else
+            ////if board size is even, a solvable board has an odd sum of inversions and blank tile row
+            //return (inversions + blankTileRow) % 2 != 0;
+    //}
 
     /**
      * All boards that can be reached in one legal move from this board
      * <p>
-     * l    * FIXME remove this comment once we've verified that the below is accurate:
+     *FIXME remove this comment once we've verified that the below is accurate:
      * Takes time proportional to N
      *
      * @return all neighboring boards.
      */
     public Iterable<Board> neighbors() {
-        //FIXME test better, have only tested a couple cases, and only with size = 3 or 4
         //TODO comment better
         var neighbors = new Queue<Board>();
         //outermost loop runs 3 times, i.e. constant number of times, does not depend on N
@@ -322,15 +290,9 @@ public class Board {
             for (int j = blankTileCol - 1; j <= blankTileCol + 1; j++) {
                 //dont go out of bounds
                 boolean inBounds = (i >= 0 && i < size && j >= 0 && j < size);
-                //FIXME adding another set of conditions to try to avoid moving diagonals
-                // i.e. we must still be on either blank tile row or blank tile column but not both
-                // I wonder if this is too many conditions and it would be better to allow the wasted blank tile moving
-                // to itself case
+                //we must still be on either blank tile row or blank tile column but not both
                 if (inBounds && (i == blankTileRow || j == blankTileCol) && !(i == blankTileRow && j == blankTileCol)) {
-                    //FIXME assuming that allocating a new array is constant and does not depend
-                    // on it's size, is this true?
                     int[][] newBoardState = new int[size][size];
-                    //this step takes time proportional to N
                     for (int k = 0; k < size; k++) {
                         newBoardState[k] = Arrays.copyOfRange(boardFlat, (k * size), (k * size) + size);
                     }
@@ -382,81 +344,81 @@ public class Board {
         return Arrays.hashCode(boardFlat);
     }
 
-    private static int inversions(int[] data) {
-        return mergeSort(data, 0, data.length - 1);
-    }
+    //private static int inversions(int[] data) {
+        //return mergeSort(data, 0, data.length - 1);
+    //}
 
     //FIXME current implementation is O(M log M) where M = N^2 i.e. size^2,
     //a solution exists that is O(M) but I have not come up with it yet.
     //Thought:
     //check parity of Manhatttan distance for each tile, consider parity of inversioons
     //to be equal to parity of product of manhattan distance parities?
-    private static int mergeSort(int[] data, int lo, int hi) {
-        int mid = lo + (hi - lo) / 2;
-        int inversions = 0;
+    //private static int mergeSort(int[] data, int lo, int hi) {
+        //int mid = lo + (hi - lo) / 2;
+        //int inversions = 0;
 
-        if (hi > lo) {//don't do anything if our array is of size < 2
-            //count inversions in left half
-            inversions = mergeSort(data, lo, mid);
+        //if (hi > lo) {//don't do anything if our array is of size < 2
+            ////count inversions in left half
+            //inversions = mergeSort(data, lo, mid);
             //count inversions in right half
-            inversions += mergeSort(data, mid + 1, hi);
+            //inversions += mergeSort(data, mid + 1, hi);
 
             //count remaining inversions, i.e. inversion pairs
-            //that span across the two halves
-            inversions += merge(data, lo, mid + 1, hi);
-        }
-
-        return inversions;
-    }
+            ////that span across the two halves
+            //inversions += merge(data, lo, mid + 1, hi);
+        //}
+//
+        //return inversions;
+    //}
 
 
     //FIXME current implementation is O(M log M) where M = N^2 i.e. size^2,
     //a solution exists that is O(M) but I have not come up with it yet.
     //Thought:
     //check parity of Manhatttan distance for each tile, consider parity of inversioons
-    //to be equal to parity of product of manhattan distance parities?
-    private static int merge(int[] data, int lo, int mid, int hi) {
+    ////to be equal to parity of product of manhattan distance parities?
+    //private static int merge(int[] data, int lo, int mid, int hi) {
         //precondition
 //        assert isSorted(data, 0, mid);
 //        assert isSorted(data, mid + 1, data.length - 1);
 
         //our tracking indices and our running total of inversions
         //Note: i = left index, j = right index
-        int i = lo;
-        int k = lo;
-        int inversions = 0;
-        int j = mid;
+        //int i = lo;
+        //int k = lo;
+        //int inversions = 0;
+        //int j = mid;
 
-        int[] aux = Arrays.copyOf(data, data.length);
+        //int[] aux = Arrays.copyOf(data, data.length);
 
         //standard merge sort procedure:
         //if left element is less/equal than right, copy left element and iterate i & k
         //otherwise, copy right element and iterate j & k
         //do this until either i or j has passed the end of their respective subarray
-        while (i < mid && j <= hi) {
-            if (aux[i] <= aux[j])
-                data[k++] = aux[i++];
-            else {
+        //while (i < mid && j <= hi) {
+            //if (aux[i] <= aux[j])
+                //data[k++] = aux[i++];
+            //else {
                 //we're not interested in inversion pairs that include zero
-                if (aux[i] != 0 && aux[j] != 0) {
-                    inversions += mid - i;
-                }
-                data[k++] = aux[j++];
-            }
-        }
+                //if (aux[i] != 0 && aux[j] != 0) {
+                    //inversions += mid - i;
+                //}
+                //data[k++] = aux[j++];
+            //}
+        //}
 
         //copy remaining elements if any from each sub-array into main array
-        while (i < mid)
-            data[k++] = aux[i++];
-        while (j <= hi)
-            data[k++] = aux[j++];
+        //while (i < mid)
+            //data[k++] = aux[i++];
+        //while (j <= hi)
+            //data[k++] = aux[j++];
 
         //post condition
 //        assert(isSorted(data, lo, hi));
 
-        return inversions;
-    }
-
+        //return inversions;
+    //}
+//
     /*
      *  Helper function mapping a given number to it's goal (row, col) indices.
      *
@@ -473,13 +435,4 @@ public class Board {
         //Recall our function is: F(x) = [(x-1)/N, (x -1)%N]
         return new int[]{(x - 1) / size, (x - 1) % size};
     }
-
-    //FIXME not working
-    //for checking pre and post conditions for merge-sort inversion counter,
-    //only used if assertions are enabled, no need for efficiency here.
-//    private static boolean isSorted(int[] data, int low, int hi) {
-//        int[] expected = Arrays.copyOfRange(data, low, hi);
-//        Arrays.sort(expected);
-//        return Arrays.equals(expected, Arrays.copyOfRange(data, low, hi));
-//    }
 }

@@ -11,9 +11,10 @@ import java.util.ArrayList;
  * @author Chau Pham
  */
 public class Solver {
-    private MinPQ<SearchNode> pq = new MinPQ<>();
-    private Board initial;
+    //private Board initial;
+    //FIXME test this vs Queue
     private Stack<Board> solution = new Stack<>();
+    //private Queue<Board> solution = new Queue<>();
 
     /**
      * Finds a solution to the initial board given (using the A* algorithm).
@@ -27,13 +28,13 @@ public class Solver {
         if (!initial.isSolvable())
             throw new IllegalArgumentException("Board is not solvable");
 
-        this.initial = initial;
-        //TODO
-        solve();
+        solve(initial
+                );
     }
 
     //constructs our solution Iterable
-    private void solve() {
+    private void solve(Board initial) {
+        var pq = new MinPq<>();
         var head = new SearchNode(initial);
         pq.insert(head);
 
