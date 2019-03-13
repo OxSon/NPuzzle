@@ -7,8 +7,6 @@ import edu.princeton.cs.algs4.Queue;
 /**
  * Represents an 8-Puzzle board.
  * <p>
- * //FIXME remove fixme comment once we can verify the below is accurate, and perhaps get more detailed
- * //FIXME  if many methods end up with better than N^2 performance:
  * All methods take time proportional to N^2 or better, where N is the length of one side of the board.
  * Or: time proportional to M where M is total number of elements, i.e. N^2
  *
@@ -16,12 +14,6 @@ import edu.princeton.cs.algs4.Queue;
  * @author Chau Pham
  */
 public class Board {
-    /*FIXME delete this when we can be confident we have met these requirements
-     * and have notated such for each method
-     * PERFORMANCE REQS:
-     * all methods take time proportional to N^2 or better,
-     * with the exception of isSolvable() which may take up to N^4 in the worst case
-     */
     private final int[] boardFlat;
     private final int size;
     private final int[] goal;
@@ -43,7 +35,7 @@ public class Board {
 
         //calculate goal board for later reference
         goal = new int[size * size];
-        //this step takes time proportional to N
+        //this step takes time proportional to M (N^2)
         for (int i = 0; i < goal.length - 1; i++) { //add numbers in range [1, size * size - 1]
             goal[i] = i + 1;
         }
@@ -52,7 +44,7 @@ public class Board {
         //transfer data to our internal representation
         boardFlat = new int[size * size];
         int k = 0;
-        //this step takes time proportional to N^2
+        //this step takes time proportional to M (N^2)
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 boardFlat[k++] = blocks[i][j];
@@ -244,39 +236,9 @@ public class Board {
         return oddCycles % 2 == 0;//index of next element to process (if not yet visited) in P, our permutation.
     }
 
-    //FIXME this is the merge sort version, O(M lg (M)) where M is total num elements i.e. N^2 where N is side-length
-//    /**
-//     * Is this board solvable? Uses an enhanced merge sort method to determine this by counting inversions.
-//     * <p>
-//     * Provides solution in O(n lg(n)) time complexity. The authors felt the additional memory required by
-//     * Merge-sort was a worthy trade-off, considering that this extra memory is ephemeral to the function itself
-//     * and this function is unlikely to be called often.
-//     * <p>
-//     * <p>
-//     * FIXME remove this comment once we've verified that the below is accurate:
-//     * Takes time proportional to M lg(M) where M is the total number of elements,
-//     * i.e. N^2
-//     *
-//     * @return true if board is solvable false otherwise.
-//     */
-    //FIXME delete this and the merge sort methods, breaks API, useful for testing though
-    //public boolean isSolvableMergeSortMethod() {
-        //int inversions = inversions(boardFlat);
-//
-        // 1 2 3 4 5 0 6 8 9 10 7 11 13 14 15 12
-
-        //if board size is odd, a solvable board has an even number of inversions
-        //if (size % 2 != 0)
-            //return inversions % 2 == 0;
-        //else
-            ////if board size is even, a solvable board has an odd sum of inversions and blank tile row
-            //return (inversions + blankTileRow) % 2 != 0;
-    //}
-
     /**
      * All boards that can be reached in one legal move from this board
      * <p>
-     *FIXME remove this comment once we've verified that the below is accurate:
      * Takes time proportional to N
      *
      * @return all neighboring boards.
@@ -344,81 +306,6 @@ public class Board {
         return Arrays.hashCode(boardFlat);
     }
 
-    //private static int inversions(int[] data) {
-        //return mergeSort(data, 0, data.length - 1);
-    //}
-
-    //FIXME current implementation is O(M log M) where M = N^2 i.e. size^2,
-    //a solution exists that is O(M) but I have not come up with it yet.
-    //Thought:
-    //check parity of Manhatttan distance for each tile, consider parity of inversioons
-    //to be equal to parity of product of manhattan distance parities?
-    //private static int mergeSort(int[] data, int lo, int hi) {
-        //int mid = lo + (hi - lo) / 2;
-        //int inversions = 0;
-
-        //if (hi > lo) {//don't do anything if our array is of size < 2
-            ////count inversions in left half
-            //inversions = mergeSort(data, lo, mid);
-            //count inversions in right half
-            //inversions += mergeSort(data, mid + 1, hi);
-
-            //count remaining inversions, i.e. inversion pairs
-            ////that span across the two halves
-            //inversions += merge(data, lo, mid + 1, hi);
-        //}
-//
-        //return inversions;
-    //}
-
-
-    //FIXME current implementation is O(M log M) where M = N^2 i.e. size^2,
-    //a solution exists that is O(M) but I have not come up with it yet.
-    //Thought:
-    //check parity of Manhatttan distance for each tile, consider parity of inversioons
-    ////to be equal to parity of product of manhattan distance parities?
-    //private static int merge(int[] data, int lo, int mid, int hi) {
-        //precondition
-//        assert isSorted(data, 0, mid);
-//        assert isSorted(data, mid + 1, data.length - 1);
-
-        //our tracking indices and our running total of inversions
-        //Note: i = left index, j = right index
-        //int i = lo;
-        //int k = lo;
-        //int inversions = 0;
-        //int j = mid;
-
-        //int[] aux = Arrays.copyOf(data, data.length);
-
-        //standard merge sort procedure:
-        //if left element is less/equal than right, copy left element and iterate i & k
-        //otherwise, copy right element and iterate j & k
-        //do this until either i or j has passed the end of their respective subarray
-        //while (i < mid && j <= hi) {
-            //if (aux[i] <= aux[j])
-                //data[k++] = aux[i++];
-            //else {
-                //we're not interested in inversion pairs that include zero
-                //if (aux[i] != 0 && aux[j] != 0) {
-                    //inversions += mid - i;
-                //}
-                //data[k++] = aux[j++];
-            //}
-        //}
-
-        //copy remaining elements if any from each sub-array into main array
-        //while (i < mid)
-            //data[k++] = aux[i++];
-        //while (j <= hi)
-            //data[k++] = aux[j++];
-
-        //post condition
-//        assert(isSorted(data, lo, hi));
-
-        //return inversions;
-    //}
-//
     /*
      *  Helper function mapping a given number to it's goal (row, col) indices.
      *

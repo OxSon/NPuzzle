@@ -12,9 +12,7 @@ import java.util.ArrayList;
  */
 public class Solver {
     //private Board initial;
-    //FIXME test this vs Queue
     private Stack<Board> solution = new Stack<>();
-    //private Queue<Board> solution = new Queue<>();
 
     /**
      * Finds a solution to the initial board given (using the A* algorithm).
@@ -28,13 +26,12 @@ public class Solver {
         if (!initial.isSolvable())
             throw new IllegalArgumentException("Board is not solvable");
 
-        solve(initial
-                );
+        solve(initial);
     }
 
     //constructs our solution Iterable
     private void solve(Board initial) {
-        var pq = new MinPq<>();
+        var pq = new MinPQ<SearchNode>();
         var head = new SearchNode(initial);
         pq.insert(head);
 
@@ -47,7 +44,7 @@ public class Solver {
             }
         } while (!head.board.isGoal());
 
-        while(head.previous != null) {
+        while(head != null) {
             solution.push(head.board);
             head = head.previous;
         }
@@ -80,79 +77,6 @@ public class Solver {
             return Integer.compare(priority, other.priority);
         }
     }
-
-    //FIXME below represents an idea that was dropped partially through, may be
-    // worked on again, involves using an enum to represent moves and thereby
-    // saving on memory costs. Seems like it may require reimplementing Board
-    // in its' entirety though. Could also maybe represent a board internally
-    // to the solver class as a permutation, i.e. cycles?
-//    private Stack<Board> solve(Board initial) {
-//        //FIXME this is broken, we need search node class. board doesn't store previous.
-//        // options are described below. In general, what we should do is:
-//        // chain from end goal board back to beginning using the 'previous' field, or by reconstructing with move enum,
-//        // and add them to a stack as we go, and then add all those boards to the solution queue (thereby correcting the order)
-//        var head = new SearchNode();
-//        do {
-//            head = pq.delMin();
-//
-//            for (var neighbor : head.board.neighbors()) {
-//                if (!neighbor.equals(head.board))
-//                    pq.insert(new SearchNode(neighbor));
-//            }
-//        } while (!head.board.isGoal());
-//
-//        //can't return chain of previous right now.
-//        //do we want to make searchnode class that stores reference to previous,
-//        //or do we want to imitate my previous solution, i.e. make a private enum that tracks moves and
-//        //reconstruct board from that? will memory savings be worth the confusion?
-//        return null;
-//    }
-//
-//
-//    //Represents a move on the n-puzzle board, allows us to represent
-//    //different boards with minimal memory storage rather than holding
-//    //a reference to each explored possible board state
-//    private enum Move {
-//        Up, Down, Left, Right;
-//    }
-//
-//    //represents one possible board state derived from an original board state
-//    private static class SearchNode {
-//        //Board layout associated with this search node
-//        final Board board;
-//        //moves it took to get here
-//        final ArrayList<Move> moves;
-//        final int priority;
-//
-//        public SearchNode(SearchNode previous, Move move) {
-//            board = makeMove(previous.board, move);
-//
-//            moves = new ArrayList<>(previous.moves);
-//            moves.add(move);
-//
-//            //manhattan function only
-//            priority = board.manhattan() + moves.size();
-//            //manhattan function plus inversions
-////            priority = board.manhattan() + moves.size() + countInversions(board);
-//        }
-//
-//        private Iterable<SearchNode> childNodes() {
-//
-//        }
-//    }
-//
-//    private int countInversions(Board board) {
-//        //TODO supposedly this is a better heuristic by an order of magnitude
-//        //but would require us to count inversions, so make a copy of board's tiles
-//        return 0;
-//    }
-//
-//    private static Board makeMove(Board board, Move move) {
-//        //TODO return the board that would result from making the move specified
-//        // on the board specified. Maybe do some error checking and throw an exception
-//        // if it's not a valid move.
-//        return null;
-//    }
 
     /**
      * The minimum number of moves to solve initial board.
