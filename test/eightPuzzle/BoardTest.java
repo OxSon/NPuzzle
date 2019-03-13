@@ -1,7 +1,6 @@
 package eightPuzzle;
 
 import algs4.dequerandqueue.RandomizedQueue;
-import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.StdRandom;
 import org.junit.jupiter.api.Test;
 

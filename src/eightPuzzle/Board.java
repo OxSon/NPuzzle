@@ -226,20 +226,11 @@ public class Board {
         //as it gets rid of one N term for full eq of time complexity
         int[] p = new int[boardFlat.length - 1];
         int M = p.length;
-        int i = 0;//where we are in our copied array
-        int j = 0;//where we are in our original array
         //time complexity: O(M), where M = N^2 - 1, where N = side-length of board, i.e. floor(sqrt(num elements))
-        while (i < M) {
-            int num = boardFlat[j];
-            if (num != 0) { //don't consider zero as an element
-                p[i] = num;
-                i++; //only move to next slot in our new array if we've added an element
-            }
-            j++; //move to next space in our old array
-        }
+        p = Arrays.stream(boardFlat).filter(x -> x != 0).toArray();
 
-        //reuse the same i variable for a new purpose
-        i = 0;
+        //the last index we looked at as the potential beginning of a cycle
+        int i = 0;
         int init = p[0]; //beginning of our current cycle
         int oddCycles = 0;
         int processed = 0; //number of elements we have processed
@@ -391,11 +382,6 @@ public class Board {
         return Arrays.hashCode(boardFlat);
     }
 
-    //FIXME current implementation is O(M log M) where M = N^2 i.e. size^2,
-    //a solution exists that is O(M) but I have not come up with it yet.
-    //Thought:
-    //check parity of Manhatttan distance for each tile, consider parity of inversioons
-    //to be equal to parity of product of manhattan distance parities?
     private static int inversions(int[] data) {
         return mergeSort(data, 0, data.length - 1);
     }
