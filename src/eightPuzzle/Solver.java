@@ -1,8 +1,9 @@
 package eightPuzzle;
 
-import edu.princeton.cs.algs4.*;
-
-import java.util.ArrayList;
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
+import edu.princeton.cs.algs4.StdOut;
 
 /**
  * Solves a given 8-Puzzle board, if solvable.
@@ -12,7 +13,7 @@ import java.util.ArrayList;
  */
 public class Solver {
     //private Board initial;
-    private Stack<Board> solution = new Stack<>();
+    private final Stack<Board> solution = new Stack<>();
 
     /**
      * Finds a solution to the initial board given (using the A* algorithm).
@@ -37,14 +38,14 @@ public class Solver {
 
         do {
             head = pq.delMin();
-            for(var neighbor : head.board.neighbors()) {
-                //critical optimization
-                if (!neighbor.equals(head.previous))
+            for (Board neighbor : head.board.neighbors()) {
+                //Don't insert boards that we've visited recently, and skip this check if we're still at the initial board
+                if (head.previous == null || !neighbor.equals(head.previous.board))
                     pq.insert(new SearchNode(head, neighbor));
             }
         } while (!head.board.isGoal());
 
-        while(head != null) {
+        while (head != null) {
             solution.push(head.board);
             head = head.previous;
         }
@@ -66,10 +67,10 @@ public class Solver {
 
         //generic constructor
         SearchNode(SearchNode previous, Board current) {
-                this.previous = previous;
-                moves = previous.moves + 1;
-                board = current;
-                priority = current.manhattan() + moves;
+            this.previous = previous;
+            moves = previous.moves + 1;
+            board = current;
+            priority = current.manhattan() + moves;
         }
 
         @Override
@@ -80,14 +81,16 @@ public class Solver {
 
     /**
      * The minimum number of moves to solve initial board.
+     *
      * @return the minimum number of moves.
      */
     public int moves() {
-        return solution.size();
+        return solution.size() - 1;
     }
 
     /**
      * Calculates a solution to the initial board state.
+     *
      * @return a sequence of boards in a shortest solution.
      */
     public Iterable<Board> solution() {
@@ -97,8 +100,8 @@ public class Solver {
     /**
      * Program entry-point-- solves a slider puzzle as a demonstration.
      *
-     * @author Algs4 R. Sedgewick & K. Wayne
      * @param args unused.
+     * @author Algs4 R. Sedgewick & K. Wayne
      */
     public static void main(String[] args) {
         // create initial board from file

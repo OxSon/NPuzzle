@@ -1,37 +1,37 @@
 package eightPuzzle;
-/******************************************************************************
- *  Compilation:  javac PuzzleChecker.java
- *  Execution:    java  PuzzleChecker filename1.txt filename2.txt ...
- *  Dependencies: Board.java Solver.java
- *
- *  This program creates an initial board from each filename specified
- *  on the command line and finds the minimum number of moves to
- *  reach the goal state.
- *
- *  % java PuzzleChecker puzzle[0-9][0-9].txt
- *  filename                    moves     time
- *  ------------------------------------------
- *  puzzle00.txt                    0     0.09
- *  puzzle01.txt                    1     0.01
- *  puzzle02.txt                    2     0.00
- *  puzzle03.txt                    3     0.00
- *  puzzle04.txt                    4     0.00
- *  puzzle05.txt                    5     0.00
- *  puzzle06.txt                    6     0.00
- *  ............                   ..     ....
- *  puzzle46.txt                   46     0.56
- *  puzzle47.txt                   47    15.52
- *  puzzle48.txt                   48     1.07
- *  puzzle49.txt                   49    33.65
- *  puzzle50.txt                   50     9.18
- * 
- ******************************************************************************/
+/*****************************************************************************
+ Compilation:  javac PuzzleChecker.java
+ Execution:    java  PuzzleChecker filename1.txt filename2.txt ...
+ Dependencies: Board.java Solver.java
+
+ This program creates an initial board from each filename specified
+ on the command line and finds the minimum number of moves to
+ reach the goal state.
+
+ % java PuzzleChecker puzzle[0-9][0-9].txt
+ filename                    moves     time
+ ------------------------------------------
+ puzzle00.txt                    0     0.09
+ puzzle01.txt                    1     0.01
+ puzzle02.txt                    2     0.00
+ puzzle03.txt                    3     0.00
+ puzzle04.txt                    4     0.00
+ puzzle05.txt                    5     0.00
+ puzzle06.txt                    6     0.00
+ ............                   ..     ....
+ puzzle46.txt                   46     0.56
+ puzzle47.txt                   47    15.52
+ puzzle48.txt                   48     1.07
+ puzzle49.txt                   49    33.65
+ puzzle50.txt                   50     9.18
+
+ */
 
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.Stopwatch;
 
-public class PuzzleChecker {
+class PuzzleChecker {
 
     public static void main(String[] args) {
 

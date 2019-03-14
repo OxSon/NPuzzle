@@ -1,8 +1,6 @@
 package eightPuzzle;
 
-import edu.princeton.cs.algs4.*;
-
-public class TestIterable {
+class TestIterable {
     public static void main(final String[] args) {
         Solver solver = new Solver(new Board(new int[][] {
             {0, 1, 3},

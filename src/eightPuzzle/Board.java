@@ -105,31 +105,6 @@ public class Board {
         return sum;
     }
 
-    //calculates manhattan distance of a single tile using 1D index
-    //Function is:
-    //F(x, k) = manhattanSingle(x, i(k), j(k), where i(k) and j(k) return their respective 2D index for 1D index k
-    //This is a constant time operation
-    private int manhattanSingle(int x, int k) {
-        //Function for going from k = 1D index to (i, j) = 2D indices:
-        //F(k) = (k / N, k % N), where N = dimension of board
-        return manhattanSingle(x, k / size, k % size);
-    }
-
-    //calculates manhattan distance of a single tile using 2D indices
-    //Function is:
-    //F(x, i, j) = |goalI - i| + |goalJ - j|, where (i, j) are current indices of x
-    //
-    //This is a constant time operation
-    private int manhattanSingle(int x, int i, int j) {
-        if (x == 0) //we are not interested in position of blank tile
-            return 0;
-        //int[] goal = [goalI, goalJ]
-        int[] goal = goalIndices(x);
-
-        //Recall our function: F(x, i, j) = |goalI - i| + |goalJ - j|
-        return Math.abs(goal[0] - i) + Math.abs(goal[1] - j);
-    }
-
 
     /**
      * Is this board the goal board?
@@ -173,6 +148,79 @@ public class Board {
             boolean zeroParity = blankTileRow % 2 == 0;
             return zeroParity != evenParity;
         }
+    }
+
+
+    /**
+     * All boards that can be reached in one legal move from this board
+     * <p>
+     * Takes time proportional to N
+     *
+     * @return all neighboring boards.
+     */
+    public Iterable<Board> neighbors() {
+        //neighbors we've found so far
+        var neighbors = new Queue<Board>();
+        /*check the square to the left, right, above, and below, for a valid move and add the board that would
+          result from that move if there is one */
+        for (int i = blankTileRow - 1; i <= blankTileRow + 1; i++) {
+            for (int j = blankTileCol - 1; j <= blankTileCol + 1; j++) {
+                //dont go out of bounds
+                boolean inBounds = (i >= 0 && i < size && j >= 0 && j < size);
+                //we must still be on either blank tile row or blank tile column but not both
+                if (inBounds && (i == blankTileRow || j == blankTileCol) && !(i == blankTileRow && j == blankTileCol)) {
+                    int[][] newBoardState = new int[size][size];
+                    //copy over our current board into a new array
+                    for (int k = 0; k < size; k++) {
+                        newBoardState[k] = Arrays.copyOfRange(boardFlat, (k * size), (k * size) + size);
+                    }
+
+                    //create the board corresponding to the move being made and add it to our queue
+                    int tileToMove = (i * size) + j;
+                    int temp = boardFlat[tileToMove];
+                    newBoardState[i][j] = 0;
+                    newBoardState[blankTileRow][blankTileCol] = temp;
+                    neighbors.enqueue(new Board(newBoardState));
+                }
+            }
+        }
+
+        //Total time is apprx 9N, or O(N)
+        return neighbors;
+    }
+
+    //Should take time proportional to N^2
+    @Override
+    public String toString() {
+        var sb = new StringBuilder();
+        sb.append(size).append("\n");
+        for (int i = 0; i < size; i++) { //outer loop runs N times
+            for (int j = 0; j < size; j++) { //inner loop runs N times
+                sb.append(String.format("%2d ", boardFlat[(i * size) + j]));
+            }
+            sb.append("\n");
+        }
+        return sb.toString();
+    }
+
+
+    //Should take time proportional to N^2 in the worst case as per java's Arrays.equals spec,
+    //i.e. Arrays.equals takes linear time in the worst case,
+    // i.e. time proportional to M, where M for Arrays.equals = N^2
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Board board = (Board) o;
+        return Arrays.equals(boardFlat, board.boardFlat);
+    }
+
+    //Should take time proportional to N^2 in the worst case as per java's Arrays.hashcode spec,
+    //i.e. Arrays.hashcode takes linear time in the worst case,
+    // i.e. time proportional to M, where M for Arrays.hashcode = N^2
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(boardFlat);
     }
 
     private boolean permutationParity() {
@@ -236,74 +284,29 @@ public class Board {
         return oddCycles % 2 == 0;//index of next element to process (if not yet visited) in P, our permutation.
     }
 
-    /**
-     * All boards that can be reached in one legal move from this board
-     * <p>
-     * Takes time proportional to N
-     *
-     * @return all neighboring boards.
-     */
-    public Iterable<Board> neighbors() {
-        //TODO comment better
-        var neighbors = new Queue<Board>();
-        //outermost loop runs 3 times, i.e. constant number of times, does not depend on N
-        for (int i = blankTileRow - 1; i <= blankTileRow + 1; i++) {
-            //second outer loop runs 3 times, i.e. constant number of times, does not depend on N
-            for (int j = blankTileCol - 1; j <= blankTileCol + 1; j++) {
-                //dont go out of bounds
-                boolean inBounds = (i >= 0 && i < size && j >= 0 && j < size);
-                //we must still be on either blank tile row or blank tile column but not both
-                if (inBounds && (i == blankTileRow || j == blankTileCol) && !(i == blankTileRow && j == blankTileCol)) {
-                    int[][] newBoardState = new int[size][size];
-                    for (int k = 0; k < size; k++) {
-                        newBoardState[k] = Arrays.copyOfRange(boardFlat, (k * size), (k * size) + size);
-                    }
-
-                    int tileToMove = (i * size) + j;
-                    int temp = boardFlat[tileToMove];
-                    newBoardState[i][j] = 0;
-                    newBoardState[blankTileRow][blankTileCol] = temp;
-                    neighbors.enqueue(new Board(newBoardState));
-                }
-            }
-        }
-
-        //Total time is apprx 9N, or O(N)
-        return neighbors;
+    //calculates manhattan distance of a single tile using 1D index
+    //Function is:
+    //F(x, k) = manhattanSingle(x, i(k), j(k), where i(k) and j(k) return their respective 2D index for 1D index k
+    //This is a constant time operation
+    private int manhattanSingle(int x, int k) {
+        //Function for going from k = 1D index to (i, j) = 2D indices:
+        //F(k) = (k / N, k % N), where N = dimension of board
+        return manhattanSingle(x, k / size, k % size);
     }
 
-    //Should take time proportional to N^2
-    @Override
-    public String toString() {
-        var sb = new StringBuilder();
-        sb.append(size).append("\n");
-        for (int i = 0; i < size; i++) { //outer loop runs N times
-            for (int j = 0; j < size; j++) { //inner loop runs N times
-                sb.append(String.format("%2d ", boardFlat[(i * size) + j]));
-            }
-            sb.append("\n");
-        }
-        return sb.toString();
-    }
+    //calculates manhattan distance of a single tile using 2D indices
+    //Function is:
+    //F(x, i, j) = |goalI - i| + |goalJ - j|, where (i, j) are current indices of x
+    //
+    //This is a constant time operation
+    private int manhattanSingle(int x, int i, int j) {
+        if (x == 0) //we are not interested in position of blank tile
+            return 0;
+        //int[] goal = [goalI, goalJ]
+        int[] goal = goalIndices(x);
 
-
-    //Should take time proportional to N^2 in the worst case as per java's Arrays.equals spec,
-    //i.e. Arrays.equals takes linear time in the worst case,
-    // i.e. time proportional to M, where M for Arrays.equals = N^2
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Board board = (Board) o;
-        return Arrays.equals(boardFlat, board.boardFlat);
-    }
-
-    //Should take time proportional to N^2 in the worst case as per java's Arrays.hashcode spec,
-    //i.e. Arrays.hashcode takes linear time in the worst case,
-    // i.e. time proportional to M, where M for Arrays.hashcode = N^2
-    @Override
-    public int hashCode() {
-        return Arrays.hashCode(boardFlat);
+        //Recall our function: F(x, i, j) = |goalI - i| + |goalJ - j|
+        return Math.abs(goal[0] - i) + Math.abs(goal[1] - j);
     }
 
     /*
