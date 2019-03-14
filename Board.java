@@ -69,12 +69,14 @@ public final class Board {
 	 */
 	public int manhattan() {
 		int manhattan = 0;
+		int temp = 0;
 		for (int i = 0; i < blocks.length; i++) {
 			if (blocks[i] == 0) continue;
 			if (blocks[i] - 1 != i) {
-				int step = blocks[i] - 1 - i;
-				if (step < 0) step = -step;
-				manhattan += step / size + step % size;
+				int rowStep = Math.abs((blocks[i] - 1) / size - i / size);
+				int colStep = Math.abs((blocks[i] - 1) % size - i % size);
+				temp = rowStep + colStep;			
+				manhattan += temp;
 			}
 		}
 		return manhattan;
@@ -150,7 +152,7 @@ public final class Board {
 				swap(neighbors, indexOfBlank, indexOfBlank + 1);				
 				swap(neighbors, indexOfBlank, indexOfBlank + size);
 			} else if (indexOfBlank == size - 1) {
-				swap(neighbors, indexOfBlank, indexOfBlank + 1);
+				swap(neighbors, indexOfBlank, indexOfBlank - 1);
 				swap(neighbors, indexOfBlank, indexOfBlank + size);
 			} else {
 				swap(neighbors, indexOfBlank, indexOfBlank + 1);				
@@ -247,6 +249,8 @@ public final class Board {
 		
 		StdOut.println(board2);
 		StdOut.println("Is it the board goal? " + board2.isGoal());
+		StdOut.println("Hamming#: " + board2.hamming());
+		StdOut.println("Manhattan#: " + board2.manhattan());
 		StdOut.println();
 		
 		StdOut.println("Testing isSolvable()");
@@ -263,29 +267,45 @@ public final class Board {
 		boards1[4] = new Board(blocks10);
 		StdOut.println(boards1[0]);
 		StdOut.println("Is it solvable? " + boards1[0].isSolvable());
+		StdOut.println("Hamming#: " + boards1[0].hamming());
+		StdOut.println("Manhattan#: " + boards1[0].manhattan());
 		StdOut.println(boards1[1]);
 		StdOut.println("Is it solvable? " + boards1[1].isSolvable());
+		StdOut.println("Hamming#: " + boards1[1].hamming());
+		StdOut.println("Manhattan#: " + boards1[1].manhattan());
 		StdOut.println(boards1[2]);
 		StdOut.println("Is it solvable? " + boards1[2].isSolvable());
+		StdOut.println("Hamming#: " + boards1[2].hamming());
+		StdOut.println("Manhattan#: " + boards1[2].manhattan());
 		StdOut.println(boards1[3]);
 		StdOut.println("Is it solvable? " + boards1[3].isSolvable());
+		StdOut.println("Hamming#: " + boards1[3].hamming());
+		StdOut.println("Manhattan#: " + boards1[3].manhattan());
 		StdOut.println(boards1[4]);
 		StdOut.println("Is it solvable? " + boards1[4].isSolvable());
+		StdOut.println("Hamming#: " + boards1[4].hamming());
+		StdOut.println("Manhattan#: " + boards1[4].manhattan());
 		
 		int[][] blocks3 = { {0, 1, 3}, {4, 2, 5}, {7, 8, 6} };
 		Board board3 = new Board(blocks3);
 		StdOut.println(board3);
 		StdOut.println("Is it solvable? " + board3.isSolvable());
+		StdOut.println("Hamming#: " + board3.hamming());
+		StdOut.println("Manhattan#: " + board3.manhattan());
 		
 		int[][] blocks4 = { {1, 2, 3, 4}, {5, 0, 6, 8}, {9, 10, 7, 11}, {13, 14, 15, 12} };
 		Board board4 = new Board(blocks4);
 		StdOut.println(board4);
 		StdOut.println("Is it solvable? " + board4.isSolvable());
+		StdOut.println("Hamming#: " + board4.hamming());
+		StdOut.println("Manhattan#: " + board4.manhattan());
 		
 		int[][] blocks5 = { {1, 2, 3, 4}, {5, 0, 6, 8}, {9, 10, 7, 11}, {13, 14, 12, 15} };
 		Board board5 = new Board(blocks5);
 		StdOut.println(board5);
 		StdOut.println("Is it solvable? " + board5.isSolvable());
+		StdOut.println("Hamming#: " + board5.hamming());
+		StdOut.println("Manhattan#: " + board5.manhattan());
 		StdOut.println();
 		
 		StdOut.println("Testing equal()");
@@ -296,6 +316,8 @@ public final class Board {
 		Board board6 = new Board(blocks11);
 		StdOut.println(board1);
 		StdOut.println(board6);
+		StdOut.println("Hamming#: " + board6.hamming());
+		StdOut.println("Manhattan#: " + board6.manhattan());
 		StdOut.println("Are the above boards equal? " + board1.equals(board6));
 		StdOut.println();
 		
@@ -322,9 +344,20 @@ public final class Board {
 		Board board7 = new Board(blocks12);
 		StdOut.println("Original:");
 		StdOut.println(board7);
+		StdOut.println("Hamming#: " + board7.hamming());
+		StdOut.println("Manhattan#: " + board7.manhattan());
 		StdOut.println("Neighbors:");
 		for (Board b: board7.neighbors()) {
 			StdOut.println(b);
+			StdOut.println("Hamming#: " + b.hamming());
+			StdOut.println("Manhattan#: " + b.manhattan());
 		}
+		/*
+		int[][] blocks1 = { {1, 2, 3}, {4, 6, 7}, {8, 5, 0} };
+		Board board1 = new Board(blocks1);
+		StdOut.println(board1);
+		StdOut.println("Hamming#: " + board1.hamming());
+		StdOut.println("Manhattan#: " + board1.manhattan());
+		*/
 	}
 }

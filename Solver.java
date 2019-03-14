@@ -14,9 +14,8 @@ public final class Solver {
 	 * @param initial
 	 */
 	public Solver(Board initial) {
-		if (!initial.isSolvable()) throw new IllegalArgumentException("The board is not solvable.");
 		if (initial == null) throw new NullPointerException("Null value is not accepted.");
-		
+		if (!initial.isSolvable()) throw new IllegalArgumentException("The board is not solvable.");	
 		MinPQ<SearchNode> pq = new MinPQ<>();
 		solutions = new Stack<>();
 		
@@ -24,6 +23,7 @@ public final class Solver {
 		pq.insert(firstNode);
 		
 		while (true) {
+
 			firstNode = pq.delMin();
 			if (firstNode.board.isGoal()) break;
 			
